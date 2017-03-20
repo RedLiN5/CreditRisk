@@ -32,3 +32,17 @@ class DataProcess(object):
                                'TransCount', 'PresentBill', 'AdjustAmount',
                                'Interest', 'Balance', 'CashBalance', 'PayStatus']
         return bill_detail
+
+    def _load_loan_time(self):
+        loan_time = pd.read_table('train/loan_time_train.txt',
+                                  sep=',', header=None, index_col=None)
+        loan_time.columns = ['ID', 'LoanTime']
+        return loan_time
+
+    def _load_overdue(self):
+        overdue = pd.read_table('train/overdue_train.txt',
+                                sep=',', header=None, index_col=None)
+        overdue.columns = ['ID', 'Overdue']
+        return overdue
+
+    
