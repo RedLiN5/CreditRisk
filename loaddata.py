@@ -45,4 +45,8 @@ class DataProcess(object):
         overdue.columns = ['ID', 'Overdue']
         return overdue
 
+    def _concate_data(self):
+        pass
+        # TODO pd.concat
+
     
