@@ -46,7 +46,11 @@ class DataProcess(object):
         return overdue
 
     def _concate_data(self):
-        pass
+        user_info = self._load_user_info()
+        bank_detail = self._load_bank_detail()
+        browse_history = self._load_browse_history()
+        bill_detail = self._load_bill_detail()
+        loan_time = self._load_loan_time()
+        overdue = self._load_overdue()
         # TODO pd.concat
 
-    
