@@ -1,5 +1,5 @@
 import pandas as pd
-
+from pymongo import MongoClient
 
 
 class DataProcess(object):
@@ -52,5 +52,21 @@ class DataProcess(object):
         bill_detail = self._load_bill_detail()
         loan_time = self._load_loan_time()
         overdue = self._load_overdue()
-        # TODO pd.concat
+        data = pd.concat([user_info, bank_detail,browse_history,
+                          bill_detail, loan_time, overdue],
+                         axis=1)
+        return data
+
+    def _save2mongodb(self):
+        data = self._concate_data()
+        client = MongoClient('localhost', 27017)
+        db = client['CreditRisk']
+        collection = db.user_info
+        collection.insert_many(data[:1000].to_dict('records'))
+
+if __name__ == '__main__':
+    dp = DataProcess()
+    data = dp._concate_data()
+    print(data.shape)
+    dp._save2mongodb()
 
