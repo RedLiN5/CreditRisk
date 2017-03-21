@@ -1,31 +1,38 @@
 import pandas as pd
 from pymongo import MongoClient
+import os
 
 
 class DataProcess(object):
 
+    def __init__(self, dir_path=None):
+        if dir_path == None:
+            self.dir_path = os.path.dirname(os.path.realpath(__file__))
+        else:
+            self.dir_path = dir_path
+
     def _load_user_info(self):
-        user_info = pd.read_table('train/user_info_train.txt',
+        user_info = pd.read_table(self.dir_path+'/train/user_info_train.txt',
                                   sep=',', header=None, index_col=None)
         user_info.columns = ['ID', 'Gender', 'Occupation', 'Education',
                              'Marriage', 'Residence']
         return user_info
 
     def _load_bank_detail(self):
-        bank_detail = pd.read_table('train/bank_detail_train.txt',
+        bank_detail = pd.read_table(self.dir_path+'/train/bank_detail_train.txt',
                                     sep=',', header=None, index_col=None)
         bank_detail.columns = ['ID', 'Timestamp', 'Transaction', 'Amount',
                                'Income']
         return bank_detail
 
     def _load_browse_history(self):
-        browse_history = pd.read_table('train/browse_history_train.txt',
+        browse_history = pd.read_table(self.dir_path+'/train/browse_history_train.txt',
                                        sep=',', header=None, index_col=None)
         browse_history.columns = ['ID', 'Timestamp', 'Activity', 'ActivityNum']
         return browse_history
 
     def _load_bill_detail(self):
-        bill_detail = pd.read_table('train/bill_detail_train.txt',
+        bill_detail = pd.read_table(self.dir_path+'/train/bill_detail_train.txt',
                                     sep=',', header=None, index_col=None)
         bill_detail.columns = ['ID', 'BillTimestamp', 'BankID', 'LastBillAmount',
                                'LastBillPaid', 'Limit', 'Balance', 'MinPayment',
@@ -34,13 +41,13 @@ class DataProcess(object):
         return bill_detail
 
     def _load_loan_time(self):
-        loan_time = pd.read_table('train/loan_time_train.txt',
+        loan_time = pd.read_table(self.dir_path+'/train/loan_time_train.txt',
                                   sep=',', header=None, index_col=None)
         loan_time.columns = ['ID', 'LoanTime']
         return loan_time
 
     def _load_overdue(self):
-        overdue = pd.read_table('train/overdue_train.txt',
+        overdue = pd.read_table(self.dir_path+'/train/overdue_train.txt',
                                 sep=',', header=None, index_col=None)
         overdue.columns = ['ID', 'Overdue']
         return overdue
@@ -67,6 +74,6 @@ class DataProcess(object):
 if __name__ == '__main__':
     dp = DataProcess()
     data = dp._concate_data()
-    print(data.shape)
-    dp._save2mongodb()
+    # print(data.shape)
+    # dp._save2mongodb()
 
