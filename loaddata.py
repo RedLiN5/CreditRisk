@@ -1,6 +1,7 @@
 import pandas as pd
 from pymongo import MongoClient
 import os
+from functools import reduce
 
 
 class DataProcess(object):
@@ -59,9 +60,11 @@ class DataProcess(object):
         bill_detail = self._load_bill_detail()
         loan_time = self._load_loan_time()
         overdue = self._load_overdue()
-        data = pd.concat([user_info, bank_detail,browse_history,
-                          bill_detail, loan_time, overdue],
-                         axis=1)
+        dfs = [user_info, bank_detail,browse_history,
+               bill_detail, loan_time, overdue]
+        data = reduce(lambda left, right: pd.merge(left, right,
+                                                   on='ID', how='outer'),
+                      dfs)
         return data
 
     def _save2mongodb(self):
@@ -74,6 +77,6 @@ class DataProcess(object):
 if __name__ == '__main__':
     dp = DataProcess()
     data = dp._concate_data()
-    # print(data.shape)
+    print(data.columns)
     # dp._save2mongodb()
 
