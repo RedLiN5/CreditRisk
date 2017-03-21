@@ -2,7 +2,7 @@ import pandas as pd
 from pymongo import MongoClient
 import os
 from functools import reduce
-
+import json
 
 class DataProcess(object):
 
@@ -71,8 +71,8 @@ class DataProcess(object):
         data = self._concate_data()
         client = MongoClient('localhost', 27017)
         db = client['CreditRisk']
-        collection = db.user_info
-        collection.insert_many(data[:1000].to_dict('records'))
+        records = json.loads(data.T.to_json()).values()
+        db.user_info.insert(records)
 
 if __name__ == '__main__':
     dp = DataProcess()
