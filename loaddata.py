@@ -56,12 +56,20 @@ class DataProcess(object):
     def _concate_data(self):
         user_info = self._load_user_info()
         bank_detail = self._load_bank_detail()
-        browse_history = self._load_browse_history()
         bill_detail = self._load_bill_detail()
         loan_time = self._load_loan_time()
         overdue = self._load_overdue()
-        dfs = [user_info, bank_detail,browse_history,
-               bill_detail, loan_time, overdue]
+        user = user_info[:1000]
+        ids = user_info['ID'][:1000]
+        bank_pos = bank_detail['ID'].isin(ids)
+        bank = bank_detail.loc[bank_pos]
+        bill_pos = bill_detail['ID'].isin(ids)
+        bill = bill_detail.loc[bill_pos]
+        loan_pos = loan_time['ID'].isin(ids)
+        loan = loan_time.loc[loan_pos]
+        overd_pos = overdue['ID'].isin(ids)
+        overd = overdue.loc[overd_pos]
+        dfs = [user, loan, overd, bank, bill]
         data = reduce(lambda left, right: pd.merge(left, right,
                                                    on='ID', how='outer'),
                       dfs)
@@ -77,6 +85,6 @@ class DataProcess(object):
 if __name__ == '__main__':
     dp = DataProcess()
     data = dp._concate_data()
-    print(data.columns)
-    # dp._save2mongodb()
+    print(data.shape)
+    dp._save2mongodb()
 
