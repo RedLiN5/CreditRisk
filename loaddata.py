@@ -3,6 +3,7 @@ from pymongo import MongoClient
 import os
 from functools import reduce
 import json
+import time
 
 class DataProcess(object):
 
@@ -36,8 +37,8 @@ class DataProcess(object):
         bill_detail = pd.read_table(self.dir_path+'/train/bill_detail_train.txt',
                                     sep=',', header=None, index_col=None)
         bill_detail.columns = ['ID', 'BillTimestamp', 'BankID', 'LastBillAmount',
-                               'LastBillPaid', 'Limit', 'Balance', 'MinPayment',
-                               'TransCount', 'PresentBill', 'AdjustAmount',
+                               'LastBillPaid', 'Limit', 'CurrentBalance', 'CurrentMinPayment',
+                               'TransCount', 'CurrentBill', 'AdjustAmount',
                                'Interest', 'Balance', 'CashBalance', 'PayStatus']
         return bill_detail
 
