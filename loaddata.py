@@ -78,14 +78,30 @@ class DataProcess(object):
 
     def _save2mongodb(self):
         data = self._concate_data()
+        data = data[:5000000]
+        print(data.shape)
         client = MongoClient('localhost', 27017)
         db = client['CreditRisk']
-        records = json.loads(data.T.to_json()).values()
+        nrow = data.shape[0]
+        base = 1000000
+        n = nrow//base
+        restrow = nrow%base
+        for i in range(n):
+            if i == 0:
+                data_temp = data.loc[:(i+1)*base]
+                records = json.loads(data_temp.T.to_json()).values()
+                db.user_info.insert(records)
+            else:
+                data_temp = data.loc[(i*base+1):(i+1)*base]
+                records = json.loads(data_temp.T.to_json()).values()
+                db.user_info.insert(records)
+        data_temp = data.loc[-restrow:]
+        records = json.loads(data_temp.T.to_json()).values()
         db.user_info.insert(records)
 
 if __name__ == '__main__':
     dp = DataProcess()
-    data = dp._concate_data()
-    print(data.shape)
+    start = time.time()
     dp._save2mongodb()
+    print('Time:', time.time() - start)
 
