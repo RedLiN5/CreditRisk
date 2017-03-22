@@ -72,9 +72,9 @@ class DataProcess(object):
         overd = overdue.loc[overd_pos]
         dfs = [user, loan, overd, bank, bill]
         data = reduce(lambda left, right: pd.merge(left, right,
-                                                   on='ID', how='outer'),
+                                                   on='ID', how='inner'),
                       dfs)
-        return data
+        return data  # (15500110, 26)
 
     def _save2mongodb(self):
         data = self._concate_data()
@@ -102,6 +102,6 @@ class DataProcess(object):
 if __name__ == '__main__':
     dp = DataProcess()
     start = time.time()
-    dp._save2mongodb()
+    dp._concate_data()
     print('Time:', time.time() - start)
 
