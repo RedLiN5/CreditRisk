@@ -8,11 +8,11 @@ class DataPreprocess(object):
 
     def _load_db(self):
         client = MongoClient('localhost', 27017)
-        db = client.user_info
+        db = client['CreditRisk']
         if self.nrow:
-            cursor = db.find().limit(self.nrow)
+            cursor = db.user_info.find().limit(self.nrow)
         else:
-            cursor = db.find().limit(1000)
+            cursor = db.user_info.find().limit(1000)
         data = pd.DataFrame(list(cursor))
         data = data.drop('_id', axis=1)
         client.close()
