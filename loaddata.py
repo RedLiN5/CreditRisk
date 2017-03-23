@@ -61,7 +61,7 @@ class DataProcess(object):
         loan_time = self._load_loan_time()
         overdue = self._load_overdue()
         user = user_info[:1000]
-        ids = user_info['ID'][:1000]
+        ids = user['ID']
         bank_pos = bank_detail['ID'].isin(ids)
         bank = bank_detail.loc[bank_pos]
         bill_pos = bill_detail['ID'].isin(ids)
@@ -78,7 +78,6 @@ class DataProcess(object):
 
     def _save2mongodb(self):
         data = self._concate_data()
-        data = data[:5000000]
         print(data.shape)
         client = MongoClient('localhost', 27017)
         db = client['CreditRisk']
@@ -91,17 +90,20 @@ class DataProcess(object):
                 data_temp = data.loc[:(i+1)*base]
                 records = json.loads(data_temp.T.to_json()).values()
                 db.user_info.insert(records)
+                del data_temp
             else:
                 data_temp = data.loc[(i*base+1):(i+1)*base]
                 records = json.loads(data_temp.T.to_json()).values()
                 db.user_info.insert(records)
-        data_temp = data.loc[-restrow:]
+                del data_temp
+        data_temp = data.iloc[-restrow:]
         records = json.loads(data_temp.T.to_json()).values()
         db.user_info.insert(records)
+        client.close()
 
 if __name__ == '__main__':
     dp = DataProcess()
     start = time.time()
-    dp._concate_data()
+    dp._save2mongodb()
     print('Time:', time.time() - start)
 
