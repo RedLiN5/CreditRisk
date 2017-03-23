@@ -23,7 +23,7 @@ class DataProcess(object):
     def _load_bank_detail(self):
         bank_detail = pd.read_table(self.dir_path+'/train/bank_detail_train.txt',
                                     sep=',', header=None, index_col=None)
-        bank_detail.columns = ['ID', 'Timestamp', 'Transaction', 'Amount',
+        bank_detail.columns = ['ID', 'TransactionTime', 'TransactionType', 'TransactionAmount',
                                'Income']
         return bank_detail
 
@@ -36,10 +36,10 @@ class DataProcess(object):
     def _load_bill_detail(self):
         bill_detail = pd.read_table(self.dir_path+'/train/bill_detail_train.txt',
                                     sep=',', header=None, index_col=None)
-        bill_detail.columns = ['ID', 'BillTimestamp', 'BankID', 'LastBillAmount',
+        bill_detail.columns = ['ID', 'BillTime', 'BankID', 'LastBillAmount',
                                'LastBillPaid', 'Limit', 'CurrentBalance', 'CurrentMinPayment',
-                               'TransCount', 'CurrentBill', 'AdjustAmount',
-                               'Interest', 'Balance', 'CashBalance', 'PayStatus']
+                               'TransCount', 'CurrentBillAmount', 'AdjustAmount',
+                               'Interest', 'AvaiBalance', 'CashBalance', 'PayStatus']
         return bill_detail
 
     def _load_loan_time(self):
@@ -70,7 +70,7 @@ class DataProcess(object):
         loan = loan_time.loc[loan_pos]
         overd_pos = overdue['ID'].isin(ids)
         overd = overdue.loc[overd_pos]
-        dfs = [user, loan, overd, bank, bill]
+        dfs = [user, loan, bank, bill, overd]
         data = reduce(lambda left, right: pd.merge(left, right,
                                                    on='ID', how='inner'),
                       dfs)
