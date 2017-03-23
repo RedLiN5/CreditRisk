@@ -4,6 +4,11 @@ import os
 from functools import reduce
 import json
 import time
+import inspect
+
+def retrieve_name(var):
+    callers_local_vars = inspect.currentframe().f_back.f_locals.items()
+    return [var_name for var_name, var_val in callers_local_vars if var_val is var]
 
 class DataProcess(object):
 
@@ -58,47 +63,42 @@ class DataProcess(object):
         user_info = self._load_user_info()
         bank_detail = self._load_bank_detail()
         bill_detail = self._load_bill_detail()
-        loan_time = self._load_loan_time()
         overdue = self._load_overdue()
-        user = user_info[:1000]
-        ids = user['ID']
-        bank_pos = bank_detail['ID'].isin(ids)
-        bank = bank_detail.loc[bank_pos]
-        bill_pos = bill_detail['ID'].isin(ids)
-        bill = bill_detail.loc[bill_pos]
-        loan_pos = loan_time['ID'].isin(ids)
-        loan = loan_time.loc[loan_pos]
-        overd_pos = overdue['ID'].isin(ids)
-        overd = overdue.loc[overd_pos]
-        dfs = [user, loan, bank, bill, overd]
-        data = reduce(lambda left, right: pd.merge(left, right,
-                                                   on='ID', how='inner'),
-                      dfs)
-        return data  # (15500110, 26)
+        user_bank = pd.merge(user_info, bank_detail,
+                             on='ID', how='inner')
+        user_bill = pd.merge(user_info, bill_detail,
+                             on='ID', how='inner')
+        return user_bank, user_bill, overdue  # (15500110, 26)
 
     def _save2mongodb(self):
-        data = self._concate_data()
-        print(data.shape)
+        user_bank, user_bill, overdue = self._concate_data()
+        dfs = [user_bank, user_bill, overdue]
+        collection_names = ['user_bank', 'user_bill', 'overdue']
+        print('user_bank:', user_bank.shape)
+        print('user_bill:', user_bill.shape)
+        print('user_overdue:', overdue.shape)
         client = MongoClient('localhost', 27017)
         db = client['CreditRisk']
-        nrow = data.shape[0]
-        base = 1000000
-        n = nrow//base
-        restrow = nrow%base
-        for i in range(n):
-            if i == 0:
-                data_temp = data.loc[:(i+1)*base]
-                records = json.loads(data_temp.T.to_json()).values()
-                db.user_info.insert(records)
-                del data_temp
-            else:
-                data_temp = data.loc[(i*base+1):(i+1)*base]
-                records = json.loads(data_temp.T.to_json()).values()
-                db.user_info.insert(records)
-                del data_temp
-        data_temp = data.iloc[-restrow:]
-        records = json.loads(data_temp.T.to_json()).values()
-        db.user_info.insert(records)
+        for i in range(len(dfs)):
+            data = dfs[i]
+            collection_name = collection_names[i]
+            print(collection_name)
+            nrow = data.shape[0]
+            base = 1000000
+            n = nrow//base
+            restrow = nrow%base
+            if n >0:
+                for j in range(n):
+                    if j == 0:
+                        data_temp = data.loc[:(j+1)*base]
+                    else:
+                        data_temp = data.loc[(j*base+1):(j+1)*base]
+                    records = json.loads(data_temp.T.to_json()).values()
+                    eval('db.' + collection_name + '.insert(records)')
+            data_temp = data.iloc[-restrow:]
+            records = json.loads(data_temp.T.to_json()).values()
+            eval('db.' + collection_name + '.insert(records)')
+            del data_temp
         client.close()
 
 if __name__ == '__main__':
