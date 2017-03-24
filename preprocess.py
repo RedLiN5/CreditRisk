@@ -1,5 +1,6 @@
 from pymongo import MongoClient
 import pandas as pd
+import numpy as np
 
 
 def bill_status(x, y):
@@ -45,7 +46,8 @@ class DataPreprocess(object):
         user_bill['LastBillStatus'].fillna(0, inplace=True)
         user_bill.drop(['LastBillPaid', 'LastBillAmount'],
                        axis=1, inplace=True)
-
+        user_bill['Adjustment'] = np.sign(user_bill['AdjustAmount'])
+        user_bill.drop('AdjustAmount', axis=1, inplace=True)
 
 
 
