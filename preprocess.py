@@ -48,6 +48,5 @@ class DataPreprocess(object):
                        axis=1, inplace=True)
         user_bill['Adjustment'] = np.sign(user_bill['AdjustAmount'])
         user_bill.drop('AdjustAmount', axis=1, inplace=True)
-
-
+        user_bill.drop('CurrentMinPayment', axis=1, inplace=True)
 
