@@ -19,6 +19,21 @@ def bill_status(x, y):
     series = pd.Series(data=data, index=ind)
     return series
 
+def interest_status(x, y):
+    def status(z):
+        if z>=0.3:
+            return -1
+        else:
+            return 0
+    ind = y.index[y>=0]
+    x_val = x.iloc[ind]
+    y_val = y.iloc[ind]
+    temp = x_val/y_val
+    data = list(map(status, temp))
+    series = pd.Series(data=data, index=ind)
+    return series
+
+
 class DataPreprocess(object):
 
     def __init__(self):
@@ -49,4 +64,6 @@ class DataPreprocess(object):
         user_bill['Adjustment'] = np.sign(user_bill['AdjustAmount'])
         user_bill.drop('AdjustAmount', axis=1, inplace=True)
         user_bill.drop('CurrentMinPayment', axis=1, inplace=True)
-
+        user_bill['InterestStatus'] = interest_status(user_bill['Interest'],
+                                                      user_bill['Limit'])
+        user_bill.drop('Interest', axis=1, inplace=True)
