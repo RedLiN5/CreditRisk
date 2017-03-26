@@ -68,3 +68,4 @@ class DataPreprocess(object):
                                                       user_bill['Limit'])
         user_bill.drop('Interest', axis=1, inplace=True)
         user_bill.drop('BankID', axis=1, inplace=True)
+        # TODO Filter "AvaiBalance", Ratio of "CurrentBalance" to "Limit", and sum up "Limit" by ID
