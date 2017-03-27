@@ -33,6 +33,13 @@ def interest_status(x, y):
     series = pd.Series(data=data, index=ind)
     return series
 
+def current_balance_status(x):
+    if x >= 0.6:
+        return 1
+    elif x >= 0:
+        return 0
+    else:
+        return -1
 
 class DataPreprocess(object):
 
@@ -72,9 +79,14 @@ class DataPreprocess(object):
         user_bill['AvaiBalanceStatus'] = list(map(lambda x: 1 if x >= 0 else -1,
                                                   user_bill['AvaiBalance']))
         user_bill.drop('AvaiBalance', axis=1, inplace=True)
-        ratio_Current_Limit = user_bill['CurrentBillAmount']/user_bill['Limit']
+        ratio_CurrentBill_Limit = user_bill['CurrentBillAmount']/user_bill['Limit']
         user_bill['CurrentBillRatio'] = list(map(lambda x: 1 if x<=0.5 else 0,
-                                                 ratio_Current_Limit))
+                                                 ratio_CurrentBill_Limit))
         user_bill.drop('CurrentBillAmount', axis=1, inplace=True)
+        ratio_CurrentBalan_Limit = user_bill['CurrentBalance']/user_bill['Limit']
+        user_bill['CurrentBlanceRatio'] = list(map(current_balance_status,
+                                                   ratio_CurrentBalan_Limit))
+        user_bill.drop('CurrentBalance', axis=1, inplace=True)
+
 
 
