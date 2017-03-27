@@ -68,7 +68,13 @@ class DataPreprocess(object):
                                                       user_bill['Limit'])
         user_bill.drop('Interest', axis=1, inplace=True)
         user_bill.drop('BankID', axis=1, inplace=True)
-        # TODO Filter "AvaiBalance", Ratio of "CurrentBalance" to "Limit", and sum up "Limit" by ID
+        # TODO Filter  Ratio of "CurrentBalance" to "Limit", and sum up "Limit" by ID
         user_bill['AvaiBalanceStatus'] = list(map(lambda x: 1 if x >= 0 else -1,
                                                   user_bill['AvaiBalance']))
         user_bill.drop('AvaiBalance', axis=1, inplace=True)
+        ratio_Current_Limit = user_bill['CurrentBillAmount']/user_bill['Limit']
+        user_bill['CurrentBillRatio'] = list(map(lambda x: 1 if x<=0.5 else 0,
+                                                 ratio_Current_Limit))
+        user_bill.drop('CurrentBillAmount', axis=1, inplace=True)
+
+
