@@ -44,7 +44,7 @@ class DataProcess(object):
         bill_detail.columns = ['ID', 'BillTime', 'BankID', 'LastBillAmount',
                                'LastBillPaid', 'Limit', 'CurrentBalance', 'CurrentMinPayment',
                                'TransCount', 'CurrentBillAmount', 'AdjustAmount',
-                               'Interest', 'AvaiBalance', 'CashBalance', 'PayStatus']
+                               'Interest', 'AvaiBalance', 'CashLimit', 'PayStatus']
         return bill_detail
 
     def _load_loan_time(self):
