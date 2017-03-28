@@ -63,6 +63,9 @@ class DataPreprocess(object):
 
     def _preprocess(self):
         user_bank, user_bill, overdue = self._load_db()
+        user_bill['ID'] = list(map(int, user_bill['ID']))
+        user_bank['ID'] = list(map(int, user_bank['ID']))
+        overdue['ID'] = list(map(int, overdue['ID']))
         user_bill['LastBillStatus'] = bill_status(user_bill['LastBillPaid'],
                                                   user_bill['LastBillAmount'])
         user_bill['LastBillStatus'].fillna(0, inplace=True)
@@ -88,7 +91,8 @@ class DataPreprocess(object):
                                                    ratio_CurrentBalan_Limit))
         user_bill.drop('CurrentBalance', axis=1, inplace=True)
         user_bill.drop(['BillTime','CashLimit'], axis=1, inplace=True)
+        user_bill['ID'] = list(map(int, user_bill['ID']))
 
-
+        
 
 
