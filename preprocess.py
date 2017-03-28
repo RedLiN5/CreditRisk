@@ -87,6 +87,8 @@ class DataPreprocess(object):
         user_bill['CurrentBlanceRatio'] = list(map(current_balance_status,
                                                    ratio_CurrentBalan_Limit))
         user_bill.drop('CurrentBalance', axis=1, inplace=True)
+        user_bill.drop(['BillTime','CashLimit'], axis=1, inplace=True)
+
 
 
 
