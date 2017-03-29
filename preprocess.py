@@ -49,13 +49,13 @@ class DataPreprocess(object):
     def _load_db(self):
         client = MongoClient('localhost', 27017)
         db = client['CreditRisk']
-        cursor = db.user_bank.find().limit(100000)
+        cursor = db.user_bank.find().limit(2000000)
         user_bank = pd.DataFrame(list(cursor))
         user_bank.drop("_id", axis=1, inplace=True)
-        cursor = db.user_bill.find().limit(100000)
+        cursor = db.user_bill.find().limit(2000000)
         user_bill = pd.DataFrame(list(cursor))
         user_bill.drop("_id", axis=1, inplace=True)
-        cursor = db.overdue.find().limit(100000)
+        cursor = db.overdue.find().limit(2000000)
         overdue = pd.DataFrame(list(cursor))
         overdue.drop("_id", axis=1, inplace=True)
         client.close()
@@ -117,7 +117,8 @@ class DataPreprocess(object):
         user_info_unique = user_info.drop_duplicates()
         X_df = pd.merge(user_info_unique, df_groupby, how='inner',
                         on='ID').reset_index(drop=True)
-
+        df_final = pd.merge(X_df, overdue, on='ID', how='inner')
+        return df_final
 
     def run(self):
         return self._preprocess()
