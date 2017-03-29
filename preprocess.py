@@ -55,7 +55,7 @@ class DataPreprocess(object):
         cursor = db.user_bill.find().limit(2000000)
         user_bill = pd.DataFrame(list(cursor))
         user_bill.drop("_id", axis=1, inplace=True)
-        cursor = db.overdue.find().limit(2000000)
+        cursor = db.overdue.find()
         overdue = pd.DataFrame(list(cursor))
         overdue.drop("_id", axis=1, inplace=True)
         client.close()
