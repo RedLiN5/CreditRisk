@@ -70,10 +70,11 @@ class DataPreprocess(object):
 
         user_info = user_bill[['ID', 'Education', 'Gender', 'Marriage',
                                'Occupation', 'Residence']]
-        user_bill.drop(['Education', 'Gender', 'Marriage', 'Occupation', 'Residence'],
+        user_bank.drop(['Education', 'Gender', 'Marriage', 'Occupation', 'Residence'],
                        axis=1, inplace=True)
         user_bill.drop(['Education', 'Gender', 'Marriage', 'Occupation', 'Residence'],
                        axis=1, inplace=True)
+
         user_bill['LastBillStatus'] = bill_status(user_bill['LastBillPaid'],
                                                   user_bill['LastBillAmount'])
         user_bill['LastBillStatus'].fillna(0, inplace=True)
@@ -103,16 +104,20 @@ class DataPreprocess(object):
         user_bank.ix[salaryincome_index, 'SalaryIncome'] = user_bank.ix[salaryincome_index, 'TransactionAmount']
         income_index = user_bank['TransactionType'] == 0
         otherincome_index = [x for x in income_index if x not in salaryincome_index]
-        user_bank.ix[otherincome_index, 'OtherTransaction'] = user_bank.ix[otherincome_index, 'TransactionAmount']
+        user_bank.ix[otherincome_index, 'OtherIncome'] = user_bank.ix[otherincome_index, 'TransactionAmount']
         consum_loc = user_bank['TransactionType'] == 1
         user_bank.ix[consum_loc, 'Consumption'] = user_bank.ix[consum_loc, 'TransactionAmount']
-        user_bank[['SalaryIncome', 'OtherTransaction', 'Consumption']] = user_bank[
-            ['SalaryIncome', 'OtherTransaction', 'Consumption']].fillna(0)
-        user_bank.drop(['TransactionAmount', 'TransactionTime', 'TransactionType', 'Income'], axis=1, inplace=True)
+        user_bank[['SalaryIncome', 'OtherIncome', 'Consumption']] = user_bank[
+            ['SalaryIncome', 'OtherIncome', 'Consumption']].fillna(0)
+        user_bank.drop(['TransactionAmount', 'TransactionTime', 'TransactionType', 'Income'],
+                       axis=1, inplace=True)
 
         df_merged = pd.merge(user_bank, user_bill, on='ID', how='inner')
+        df_groupby = df_merged.groupby('ID', axis=0).sum().reset_index()
+        user_info_unique = user_info.drop_duplicates()
+        X_df = pd.merge(user_info_unique, df_groupby, how='inner',
+                        on='ID').reset_index(drop=True)
 
-        
 
     def run(self):
         return self._preprocess()
