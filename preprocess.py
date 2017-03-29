@@ -1,7 +1,7 @@
 from pymongo import MongoClient
 import pandas as pd
 import numpy as np
-
+from functools import reduce
 
 def bill_status(x, y):
     def status(z):
@@ -49,13 +49,13 @@ class DataPreprocess(object):
     def _load_db(self):
         client = MongoClient('localhost', 27017)
         db = client['CreditRisk']
-        cursor = db.user_bank.find().limit(1000)
+        cursor = db.user_bank.find().limit(100000)
         user_bank = pd.DataFrame(list(cursor))
         user_bank.drop("_id", axis=1, inplace=True)
-        cursor = db.user_bill.find().limit(1000)
+        cursor = db.user_bill.find().limit(100000)
         user_bill = pd.DataFrame(list(cursor))
         user_bill.drop("_id", axis=1, inplace=True)
-        cursor = db.overdue.find().limit(1000)
+        cursor = db.overdue.find().limit(100000)
         overdue = pd.DataFrame(list(cursor))
         overdue.drop("_id", axis=1, inplace=True)
         client.close()
@@ -63,9 +63,17 @@ class DataPreprocess(object):
 
     def _preprocess(self):
         user_bank, user_bill, overdue = self._load_db()
+
         user_bill['ID'] = list(map(int, user_bill['ID']))
         user_bank['ID'] = list(map(int, user_bank['ID']))
         overdue['ID'] = list(map(int, overdue['ID']))
+
+        user_info = user_bill[['ID', 'Education', 'Gender', 'Marriage',
+                               'Occupation', 'Residence']]
+        user_bill.drop(['Education', 'Gender', 'Marriage', 'Occupation', 'Residence'],
+                       axis=1, inplace=True)
+        user_bill.drop(['Education', 'Gender', 'Marriage', 'Occupation', 'Residence'],
+                       axis=1, inplace=True)
         user_bill['LastBillStatus'] = bill_status(user_bill['LastBillPaid'],
                                                   user_bill['LastBillAmount'])
         user_bill['LastBillStatus'].fillna(0, inplace=True)
@@ -78,7 +86,6 @@ class DataPreprocess(object):
                                                       user_bill['Limit'])
         user_bill.drop('Interest', axis=1, inplace=True)
         user_bill.drop('BankID', axis=1, inplace=True)
-        # TODO Filter  Ratio of "CurrentBalance" to "Limit", and sum up "Limit" by ID
         user_bill['AvaiBalanceStatus'] = list(map(lambda x: 1 if x >= 0 else -1,
                                                   user_bill['AvaiBalance']))
         user_bill.drop('AvaiBalance', axis=1, inplace=True)
@@ -102,6 +109,13 @@ class DataPreprocess(object):
         user_bank[['SalaryIncome', 'OtherTransaction', 'Consumption']] = user_bank[
             ['SalaryIncome', 'OtherTransaction', 'Consumption']].fillna(0)
         user_bank.drop(['TransactionAmount', 'TransactionTime', 'TransactionType', 'Income'], axis=1, inplace=True)
+
+        df_merged = pd.merge(user_bank, user_bill, on='ID', how='inner')
+
+        
+
+    def run(self):
+        return self._preprocess()
 
 
 
