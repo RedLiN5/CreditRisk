@@ -91,8 +91,17 @@ class DataPreprocess(object):
                                                    ratio_CurrentBalan_Limit))
         user_bill.drop('CurrentBalance', axis=1, inplace=True)
         user_bill.drop(['BillTime','CashLimit'], axis=1, inplace=True)
-        user_bill['ID'] = list(map(int, user_bill['ID']))
 
-        
+        salaryincome_index = user_bank['Income'] == 1
+        user_bank.ix[salaryincome_index, 'SalaryIncome'] = user_bank.ix[salaryincome_index, 'TransactionAmount']
+        income_index = user_bank['TransactionType'] == 0
+        otherincome_index = [x for x in income_index if x not in salaryincome_index]
+        user_bank.ix[otherincome_index, 'OtherTransaction'] = user_bank.ix[otherincome_index, 'TransactionAmount']
+        consum_loc = user_bank['TransactionType'] == 1
+        user_bank.ix[consum_loc, 'Consumption'] = user_bank.ix[consum_loc, 'TransactionAmount']
+        user_bank[['SalaryIncome', 'OtherTransaction', 'Consumption']] = user_bank[
+            ['SalaryIncome', 'OtherTransaction', 'Consumption']].fillna(0)
+        user_bank.drop(['TransactionAmount', 'TransactionTime', 'TransactionType', 'Income'], axis=1, inplace=True)
+
 
 
