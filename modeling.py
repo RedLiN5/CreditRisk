@@ -3,6 +3,7 @@ from sklearn.model_selection import train_test_split
 from sklearn.naive_bayes import BernoulliNB
 from sklearn.ensemble import RandomForestClassifier
 from xgboost.sklearn import XGBClassifier
+from sklearn.ensemble import AdaBoostClassifier
 
 class Model(object):
 
@@ -33,3 +34,15 @@ class Model(object):
         score = clf.score(self.X_test, self.y_test)
         print('Accuracy rate of XGBoost: {0:.3f}'.format(score))
 
+    def _adaboost(self):
+        clf = AdaBoostClassifier()
+        clf.fit(self.X_train, self.y_train)
+        score = clf.score(self.X_test, self.y_test)
+        print('Accuracy rate of Adaptive Boosting: {0:.3f}'.format(score))
+
+    def run_test(self):
+        self._bernoulli_NB()
+        self._random_forest()
+        self._XGBoost()
+        self._adaboost()
+        
