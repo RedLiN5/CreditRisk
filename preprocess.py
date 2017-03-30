@@ -118,6 +118,7 @@ class DataPreprocess(object):
         X_df = pd.merge(user_info_unique, df_groupby, how='inner',
                         on='ID').reset_index(drop=True)
         df_final = pd.merge(X_df, overdue, on='ID', how='inner')
+        df_final.fillna(0, inplace=True)
         return df_final
 
     def run(self):
