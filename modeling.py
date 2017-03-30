@@ -1,6 +1,7 @@
 from preprocess import DataPreprocess
 from sklearn.model_selection import train_test_split
 from sklearn.naive_bayes import BernoulliNB
+from sklearn.ensemble import RandomForestClassifier
 
 class Model(object):
 
@@ -18,4 +19,9 @@ class Model(object):
         clf.fit(self.X_train, self.y_train)
         score = clf.score(self.X_test, self.y_test)
         print('Accuracy rate of Naive Bayes: {0:.3f}'.format(score))
-    
+
+    def _random_forest(self):
+        clf = RandomForestClassifier()
+        clf.fit(self.X_train, self.y_train)
+        score = clf.score(self.X_test, self.y_test)
+        print('Accuracy rate of Random Forest: {0:.3f}'.format(score))
