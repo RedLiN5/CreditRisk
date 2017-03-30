@@ -23,43 +23,44 @@ class Model(object):
         X = df.drop('Overdue', axis=1)
         y = df['Overdue']
         self.X_train, self.X_test, self.y_train, self.y_test = \
-            train_test_split(X, y, test_size=0.3, random_state=1)
+            train_test_split(X, y, test_size=0.2, random_state=1)
 
     def _bernoulli_NB(self):
         clf = BernoulliNB()
         clf.fit(self.X_train, self.y_train)
         score = clf.score(self.X_test, self.y_test)
         print('Accuracy rate of Naive Bayes: {0:.3f}'.format(score))
-        y_pred = clf.predict(self.X_test)
-        ks(y_pred, self.y_test)
+        y_pred = clf.predict_proba(self.X_test)
+        ks(y_pred.T[0], self.y_test)
 
     def _random_forest(self):
         clf = RandomForestClassifier()
         clf.fit(self.X_train, self.y_train)
         score = clf.score(self.X_test, self.y_test)
         print('Accuracy rate of Random Forest: {0:.3f}'.format(score))
-        y_pred = clf.predict(self.X_test)
-        ks(y_pred, self.y_test)
+        y_pred = clf.predict_proba(self.X_test)
+        ks(y_pred.T[0], self.y_test)
 
     def _XGBoost(self):
         clf = XGBClassifier()
         clf.fit(self.X_train, self.y_train)
         score = clf.score(self.X_test, self.y_test)
         print('Accuracy rate of XGBoost: {0:.3f}'.format(score))
-        y_pred = clf.predict(self.X_test)
-        ks(y_pred, self.y_test)
+        y_pred = clf.predict_proba(self.X_test)
+        ks(y_pred.T[0], self.y_test)
 
     def _adaboost(self):
         clf = AdaBoostClassifier()
         clf.fit(self.X_train, self.y_train)
         score = clf.score(self.X_test, self.y_test)
         print('Accuracy rate of Adaptive Boosting: {0:.3f}'.format(score))
-        y_pred = clf.predict(self.X_test)
-        ks(y_pred, self.y_test)
+        y_pred = clf.predict_proba(self.X_test)
+        ks(y_pred.T[0], self.y_test)
 
     def run_test(self):
         self._bernoulli_NB()
         self._random_forest()
+        self._XGBoost()
         self._adaboost()
 
 if __name__ == '__main__':
