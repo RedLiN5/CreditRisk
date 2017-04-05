@@ -121,6 +121,24 @@ class DataPreprocess(object):
         df_final.fillna(0, inplace=True)
         return df_final
 
+    def _encoder(self):
+        df = self._preprocess()
+        occupation_dummy = pd.get_dummies(df['Occupation'],
+                                          prefix='occupation')
+        marriage_dummy = pd.get_dummies(df['Marriage'],
+                                        prefix='marriage')
+        PayStatus_dummy = pd.get_dummies(df['PayStatus'],
+                                         prefix='PayStatus')
+        LastBillStatus_dummy = pd.get_dummies(df['LastBillStatus'],
+                                              prefix='LastBillStatus')
+        Adjustment_dummy = pd.get_dummies(df['Adjustment'],
+                                          prefix='Adjustment')
+        InterestStatus_dummy = pd.get_dummies(df['InterestStatus'],
+                                              prefix='InterestStatus')
+        AvaiBalanceStatus_dummy = pd.get_dummies(df['AvaiBalanceStatus'],
+                                                 prefix='AvaiBalanceStatus')
+
+
     def run(self):
         return self._preprocess()
 
