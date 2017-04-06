@@ -137,7 +137,15 @@ class DataPreprocess(object):
                                               prefix='InterestStatus')
         AvaiBalanceStatus_dummy = pd.get_dummies(df['AvaiBalanceStatus'],
                                                  prefix='AvaiBalanceStatus')
-
+        df.drop(['Occupation', 'Marriage', 'PayStatus', 'LastBillStatus',
+                 'Adjustment', 'InterestStatus', 'AvaiBalanceStatus'],
+                axis=1,
+                inplace=True)
+        df = pd.concat([df, occupation_dummy, marriage_dummy, PayStatus_dummy,
+                        LastBillStatus_dummy, Adjustment_dummy, InterestStatus_dummy,
+                        AvaiBalanceStatus_dummy],
+                       axis=1)
+        return df
 
     def run(self):
         return self._preprocess()
